@@ -30,4 +30,32 @@ class companyRegistrationModel extends Model
 		);		
 		return $comid;
    }
+   
+    // load country value in drop down
+   public function loadCountryValue(){
+	   // fetch value in drop down
+	   $country = DB::table('countries')->select('country_Id', 'country_name')
+										->orderBy('country_name', 'asc')
+										->get();
+	   return $country;
+   }
+   
+    // load industry value in drop down
+   public function loadIndustryValue(){
+	   // fetch value in drop down
+	   $country = DB::table('industries')->select('industryId', 'Industry_name')
+										->orderBy('Industry_name', 'asc')
+										->get();
+	   return $country;
+   }
+   
+   // load state value on change
+   public function loadCountryStateValue($conId){
+	   // fetch value in drop down
+	   $state = DB::table('states')->select('statesId', 'country','states_name')
+										->where('country', '=', $conId)
+										->orderBy('states_name', 'asc')
+										->get();
+	   return json_encode($state);
+   }
 }

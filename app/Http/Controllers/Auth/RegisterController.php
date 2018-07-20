@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 
-
 class RegisterController extends Controller
 {
     /*
@@ -33,6 +32,7 @@ class RegisterController extends Controller
      * @var string
      */
     protected $redirectTo = '/home';
+	
 
     /**
      * Create a new controller instance.
@@ -41,7 +41,7 @@ class RegisterController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest');
+        $this->middleware('guest');		
     }
 
     /**
@@ -79,7 +79,7 @@ class RegisterController extends Controller
      */
     protected function create(array $data){
 		
-		// call model function
+		// call model function		
 		$com = new companyRegistrationModel();
 		$comid =  $com->saveCompanyData($data);
 		
@@ -98,9 +98,16 @@ class RegisterController extends Controller
     }
     
      /**
-     * Register new account.
+     * load country state.
      *
      * @param Request $request
      * @return User
      */
+	  protected function loadStateValue($countryID){
+		  
+		$com = new companyRegistrationModel();		
+		$conId = urldecode($countryID);
+		$state =  $com->loadCountryStateValue($conId);
+		return $state;
+    }
 }

@@ -101,8 +101,13 @@
 									<div class="form-group row">
 										<label for="country" class="col-sm-3 col-form-label">{{ __('Country') }}</label>
 										<div class="col-sm-9">
-											<select id="country" name="country" class="form-control{{ $errors->has('country') ? ' is-invalid' : '' }}" value="{{ old('country') }}">
-												<option value="1">Test</option>
+											<select id="country" name="country" class="form-control{{ $errors->has('country') ? ' is-invalid' : '' }}">
+												<option value="">-- Select --</option>
+												@if ($country->count())
+													 @foreach($country as $con)
+														 <option value="{{ $con->country_Id }}" {{ old('country') == $con->country_Id ? 'selected="selected"' : '' }}>{{ $con->country_name }}</option> 
+													@endforeach
+												@endif	
 											</select>
 											@if ($errors->has('country'))
 											<span class="invalid-feedback" role="alert">
@@ -163,8 +168,13 @@
 									<div class="form-group row">
 										<label for="industry" class="col-sm-3 col-form-label">{{ __('Industry Type') }}</label>
 										<div class="col-sm-9">
-											<select id="industry" name="industry" class="form-control{{ $errors->has('industry') ? ' is-invalid' : '' }}" value="{{ old('industry') }}">
-												<option value="1">Test</option>
+											<select id="industry" name="industry" class="form-control{{ $errors->has('industry') ? ' is-invalid' : '' }}">
+												<option value="">-- Select --</option>
+												@if ($industry->count())
+													 @foreach($industry as $ind)
+														 <option value="{{ $ind->industryId }}" {{ old('industry') == $ind->industryId ? 'selected="selected"' : '' }}>{{ $ind->Industry_name }}</option> 
+													@endforeach
+												@endif
 											</select>
 											@if ($errors->has('industry'))
 											<span class="invalid-feedback" role="alert">
@@ -272,5 +282,28 @@
 		</div>
 	</div>
 </div>
-</div>
+<script type="text/javascript">
+$(document).ready(function() {
+	$('#country').on('change', function() {
+		var countryID = $(this).val();
+		if(countryID != "") {
+			$.ajax({
+				url: './loadState/'+encodeURI(countryID),
+				type: "GET",
+				dataType: "json",
+				success:function(data) {
+				$('#state').html('<option value="">-- Select --</option>');
+				if(data.length != 0){
+					$.each(data, function(key, value) {
+						$('#state').append('<option value="'+ value.statesId +'">'+ value.states_name +'</option>');
+						});
+					}
+				}				
+			});
+		}else{
+			$('#state').html('<option value="">-- Select --</option>');
+		}
+   });
+});
+</script>
 @endsection
