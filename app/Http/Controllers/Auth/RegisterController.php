@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Notifications\UserRegisteredSuccessfully;
 use App\User;
+use App\companyRegistrationModel;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -49,14 +50,26 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    /* protected function validator(array $data)
+    protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'compname' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:company,comp_email',
+            'mobile' => 'required|numeric|min:10',
+            'houseno' => 'required|string',
+            'street' => 'required|string',
+            'country' => 'required',
+            'state' => 'required',
+            'city' => 'required',
+            'pincode' => 'required|numeric|min:6',
+            'industry' => 'required',
+            'fname' => 'required|string',
+            'lname' => 'required|string',
+            'designation' => 'required|string',
             'password' => 'required|string|min:6|confirmed',
+            'password_confirmation' => 'required|string|min:6',
         ]);
-    } */
+    }
 
     /**
      * Create a new user instance after a valid registration.
@@ -64,14 +77,25 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \App\User
      */
-    /* protected function create(array $data)
-    {
+    protected function create(array $data){
+		
+		// call model function
+		$com = new companyRegistrationModel();
+		$comid =  $com->saveCompanyData($data);
+		
         return User::create([
-            'name' => $data['name'],
+            'user_comp_id' => $comid,
+            'user_fname' => $data['fname'],
+            'user_lname' => $data['lname'],
             'email' => $data['email'],
+            'user_designation' => $data['designation'],
             'password' => Hash::make($data['password']),
+            'con_password' => Hash::make($data['password_confirmation']),
+            'status' => 1,
+            'user_created_by_id' => 0,
+            'user_updated_by_id' => 0
         ]);
-    } */
+    }
     
      /**
      * Register new account.
@@ -79,72 +103,4 @@ class RegisterController extends Controller
      * @param Request $request
      * @return User
      */
-    
-    protected function register(Request $request)
-    {
-        /** @var User $user */
-        dd($request);
-        $validatedData = $request->validate([
-            'user_fname'     => 'required|string|max:255',
-            'user_username'     => 'required|string|max:255',
-            'user_email'    => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
-        try {
-            $validatedData['user_comp_id']          = 1;
-            $validatedData['user_salution']         = 'Mr';
-            $validatedData['user_lname']            = 'Dubey';
-            $validatedData['password']              = bcrypt(array_get($validatedData, 'password'));
-            $validatedData['user_designation']      = 'Software Engineeer';
-            $validatedData['user_address1']         = '953/2, Nehru Road, Arjun Nagar, Kotla Mubarakpur, South Extension Part-1, New Delhi';
-            $validatedData['user_address2']         = 'B205, Ground Floor, Duggal Colony, Khanpur, New Delhi';
-            $validatedData['user_mobile']           = '9910124312';
-            $validatedData['user_landline']         = '+9111-123456';
-            $validatedData['user_pincode']          = '110003';
-            $validatedData['user_branch_id']        = 1;
-            $validatedData['user_department_id']    = 1;
-            $validatedData['user_role_id']          = 1;
-            $validatedData['user_can_view']         = 'yes';
-            $validatedData['user_can_add']          = 'yes';
-            $validatedData['user_can_edit']         = 'yes';
-            $validatedData['user_can_delete']       = 'yes';
-            $validatedData['user_has_access']       = 'yes';
-            $validatedData['activation_code']       = str_random(30).time();
-            $validatedData['status']                = 1;
-            $validatedData['remember_token']        = '123456';
-            $validatedData['user_created_by_id']    = 1;
-            $validatedData['user_updated_by_id']    = 1;
-            $validatedData['created_at']            = date('Y-m-d H:i:s');
-            $validatedData['updated_at']            = date('Y-m-d H:i:s');
-            //dd($validatedData);  
-            $user                                   = app(User::class)->create($validatedData);
-        } catch (\Exception $exception) {
-            logger()->error($exception);
-            return redirect()->back()->with('message', 'Unable to create new user.');
-        }
-        $user->notify(new UserRegisteredSuccessfully($user));
-        return redirect()->back()->with('message', 'Successfully created a new account. Please check your email and activate your account.');
-    }
-    /**
-     * Activate the user with given activation code.
-     * @param string $activationCode
-     * @return string
-     */
-    public function activateUser(string $activationCode)
-    {
-        try {
-            $user = app(User::class)->where('activation_code', $activationCode)->first();
-            if (!$user) {
-                return "The code does not exist for any user in our system.";
-            }
-            $user->status          = 1;
-            $user->activation_code = null;
-            $user->save();
-            auth()->login($user);
-        } catch (\Exception $exception) {
-            logger()->error($exception);
-            return "Whoops! something went wrong.";
-        }
-        return redirect()->to('/home');
-    }
 }
