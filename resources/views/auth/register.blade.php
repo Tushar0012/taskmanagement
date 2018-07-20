@@ -105,7 +105,7 @@
 												<option value="">-- Select --</option>
 												@if ($country->count())
 													 @foreach($country as $con)
-														 <option value="{{ $con->country_Id }}" {{ old('country') == $con->country_Id ? 'selected="selected"' : '' }}>{{ $con->country_name }}</option> 
+														 <option value="{{ $con->id }}" {{ old('country') == $con->id ? 'selected="selected"' : '' }}>{{ $con->name }}</option> 
 													@endforeach
 												@endif	
 											</select>
@@ -121,8 +121,8 @@
 									<div class="form-group row">
 										<label for="state" class="col-sm-3 col-form-label">{{ __('State') }}</label>
 										<div class="col-sm-9">
-											<select id="state" name="state" class="form-control{{ $errors->has('state') ? ' is-invalid' : '' }}" value="{{ old('state') }}">
-												<option value="1">Test</option>
+											<select id="state" name="state" class="form-control{{ $errors->has('state') ? ' is-invalid' : '' }}">
+												<option value="">-- Select --</option>
 											</select>
 											@if ($errors->has('state'))
 											<span class="invalid-feedback" role="alert">
@@ -138,8 +138,8 @@
 									<div class="form-group row">
 										<label for="city" class="col-sm-3 col-form-label">{{ __('City') }}</label>
 										<div class="col-sm-9">
-											<select id="city" name="city" class="form-control{{ $errors->has('city') ? ' is-invalid' : '' }}" value="{{ old('city') }}">
-												<option value="1">Test</option>
+											<select id="city" name="city" class="form-control{{ $errors->has('city') ? ' is-invalid' : '' }}">
+												<option value="">-- Select --</option>
 											</select>
 											@if ($errors->has('city'))
 											<span class="invalid-feedback" role="alert">
@@ -282,28 +282,68 @@
 		</div>
 	</div>
 </div>
+
 <script type="text/javascript">
 $(document).ready(function() {
+	
+	// on country change
 	$('#country').on('change', function() {
 		var countryID = $(this).val();
+		$('#state').html('<option value="">-- Select --</option>');
+		$('#city').html('<option value="">-- Select --</option>');
 		if(countryID != "") {
-			$.ajax({
-				url: './loadState/'+encodeURI(countryID),
-				type: "GET",
-				dataType: "json",
-				success:function(data) {
-				$('#state').html('<option value="">-- Select --</option>');
-				if(data.length != 0){
-					$.each(data, function(key, value) {
-						$('#state').append('<option value="'+ value.statesId +'">'+ value.states_name +'</option>');
-						});
-					}
-				}				
-			});
+			callLoadState(countryID);
 		}else{
 			$('#state').html('<option value="">-- Select --</option>');
 		}
-   });
+	});
+	
+	// on country change
+	$('#state').on('change', function() {
+		var stateID = $(this).val();
+		if(stateID != "") {
+			callLoadCity(stateID);
+		}else{
+			$('#city').html('<option value="">-- Select --</option>');
+		}
+	});
+	
 });
+
+// call ajax for load state
+function callLoadState(countryID){
+	$.ajax({
+		url: './loadState/'+encodeURI(countryID),
+		type: "GET",
+		dataType: "json",
+		success:function(data) {
+		$('#state').html('<option value="">-- Select --</option>');
+			if(data.length != 0){
+				$.each(data, function(key, value) {
+					$('#state').append('<option value="'+ value.id +'">'+ value.name +'</option>');
+				});
+				$('#state').focus();
+			}
+		}				
+	});
+}
+
+// call ajax for load city
+function callLoadCity(stateID){
+	$.ajax({
+		url: './loadCity/'+encodeURI(stateID),
+		type: "GET",
+		dataType: "json",
+		success:function(data) {
+		$('#city').html('<option value="">-- Select --</option>');
+			if(data.length != 0){
+				$.each(data, function(key, value) {
+					$('#city').append('<option value="'+ value.id +'">'+ value.name +'</option>');
+				});
+				$('#city').focus();
+			}
+		}				
+	});
+}
 </script>
 @endsection

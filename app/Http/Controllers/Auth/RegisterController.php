@@ -110,4 +110,18 @@ class RegisterController extends Controller
 		$state =  $com->loadCountryStateValue($conId);
 		return $state;
     }
+	
+	/**
+     * load country state.
+     *
+     * @param Request $request
+     * @return User
+     */
+	  protected function loadCityValue($stateID){
+		  
+		$com = new companyRegistrationModel();		
+		$stId = urldecode($stateID);
+		$city =  $com->loadStateCityValue($stId);
+		return $city;
+    }
 }
