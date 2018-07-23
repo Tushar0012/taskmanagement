@@ -17,6 +17,7 @@ Route::get('/', function () {
 
 Auth::routes();
 
+
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/loadState/{countryID}', 'Auth\RegisterController@loadStateValue')->name('state');
 Route::get('/loadCity/{stateID}', 'Auth\RegisterController@loadCityValue')->name('city');

@@ -34,8 +34,8 @@ class companyRegistrationModel extends Model
     // load country value in drop down
    public function loadCountryValue(){
 	   // fetch value in drop down
-	   $country = DB::table('countries')->select('id', 'name')
-										->orderBy('name', 'asc')
+	   $country = DB::table('countries')->select('country_id', 'country_name')
+										->orderBy('country_name', 'asc')
 										->get();
 	   return $country;
    }
@@ -52,19 +52,20 @@ class companyRegistrationModel extends Model
    // load state value on change
    public function loadCountryStateValue($conId){
 	   // fetch value in drop down
-	   $state = DB::table('states')->select('id', 'country_id','name')
-										->where('country_id', '=', $conId)
-										->orderBy('name', 'asc')
-										->get();
+     
+	   $state = DB::table('states')->select('statesId', 'states_name', 'countryid')
+										->where('countryid', '=', $conId)
+										->orderBy('states_name', 'asc')
+										->get();                   
 	   return json_encode($state);
    }
    
     // load city value on change
    public function loadStateCityValue($stId){
 	   // fetch value in drop down
-	   $city = DB::table('cities')->select('id', 'state_id','name')
+	   $city = DB::table('cities')->select('city_id','city_name', 'state_id')
 										->where('state_id', '=', $stId)
-										->orderBy('name', 'asc')
+										->orderBy('city_name', 'asc')
 										->get();
 	   return json_encode($city);
    }

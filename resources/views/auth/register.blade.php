@@ -105,7 +105,7 @@
 												<option value="">-- Select --</option>
 												@if ($country->count())
 													 @foreach($country as $con)
-														 <option value="{{ $con->id }}" {{ old('country') == $con->id ? 'selected="selected"' : '' }}>{{ $con->name }}</option> 
+														 <option value="{{ $con->country_id }}" {{ old('country') == $con->country_id ? 'selected="selected"' : '' }}>{{ $con->country_name }}</option> 
 													@endforeach
 												@endif	
 											</select>
@@ -312,6 +312,7 @@ $(document).ready(function() {
 
 // call ajax for load state
 function callLoadState(countryID){
+  //alert("hello");
 	$.ajax({
 		url: './loadState/'+encodeURI(countryID),
 		type: "GET",
@@ -320,7 +321,7 @@ function callLoadState(countryID){
 		$('#state').html('<option value="">-- Select --</option>');
 			if(data.length != 0){
 				$.each(data, function(key, value) {
-					$('#state').append('<option value="'+ value.id +'">'+ value.name +'</option>');
+					$('#state').append('<option value="'+ value.statesId +'">'+ value.states_name +'</option>');
 				});
 				$('#state').focus();
 			}
@@ -338,7 +339,7 @@ function callLoadCity(stateID){
 		$('#city').html('<option value="">-- Select --</option>');
 			if(data.length != 0){
 				$.each(data, function(key, value) {
-					$('#city').append('<option value="'+ value.id +'">'+ value.name +'</option>');
+					$('#city').append('<option value="'+ value.city_id +'">'+ value.city_name +'</option>');
 				});
 				$('#city').focus();
 			}
