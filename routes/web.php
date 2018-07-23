@@ -20,4 +20,9 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/loadState/{countryID}', 'Auth\RegisterController@loadStateValue')->name('state');
 Route::get('/loadCity/{stateID}', 'Auth\RegisterController@loadCityValue')->name('city');
+
+Route::resource('/profile', 'ProfileController')->only([
+     'show'
+]);
+
 $this->get('/verify-user/{code}', 'Auth\RegisterController@activateUser')->name('activate.user');
